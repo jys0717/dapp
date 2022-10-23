@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>音乐版权系统</title>
+    <link href="../css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="../css/test.css">
+    <style>
+        body {
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+        }
+        form-group{
+            margin-bottom:50px;
+            margin-top:50px;
+        }
+        footer{position:absolute;bottom:0;width:100%;height:100px;}</style>
+</head>
+<body onload="App.update_length()">
+<script type="text/javascript" src="./index.js"></script>
+<div id="top">
+    <span style="font-size: 60px; color: rgb(76, 180, 231);margin-left: 40px;">基于区块链的版权链</span><span style="font-size: 40px; color: rgb(255, 192, 159);">——音乐版权</span>
+</div>
+
+<div class="container-fluid">
+    <textarea id="song_length_info" type="textarea" class="form-control" style="float: left; height: 50px;width:360px;font-size: 20px;color: rgb(17, 35, 37);word-break: break-all;" placeholder="歌曲数"></textarea>
+    <textarea id="trade_length_info" type="textarea" class="form-control" style="height: 50px;width:360px;font-size: 20px;color: rgb(17, 35, 37);word-break: break-all;" placeholder="交易数"></textarea>
+    <div class="col-lg-4 col-md-4 col-sm-3 main"  style="width: 100%;">
+        <div class="main_body " style="width: 100%;">
+            <div style="float: left; width: 45%;">
+                <span><label for="upload_target" id="upload_target">填写上传信息</label></span>
+                <div class="form-group">
+                    <input type="text" id="song_name" class="form-control" placeholder="请输入歌曲名字">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="singer" class="form-control" placeholder="请输入演唱者名字">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="copyright" class="form-control" placeholder="请输入版权号">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="duration" class="form-control" placeholder="请输入歌曲时长，单位是秒">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="receiver" class="form-control" placeholder="请输入收款人账户地址">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="receiver_again" class="form-control" placeholder="请再次输入收款人账户地址">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="song_price" class="form-control" placeholder="请输入歌曲价格，0为免费">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="song_address" class="form-control" placeholder="请输入歌曲地址">
+                </div>
+                <div class="form-group">
+                    <label>点击上传歌曲歌词文本文件</label>
+                    <input type="file" id="lyric" class="form-control" placeholder="请上传歌词文本" onchange="read_txt(this)">
+                </div>
+                <div class="form-group">
+                    <label>点击上传歌曲音频文件</label>
+                    <input type="file" id="file" class="form-control" placeholder="请上传歌曲音频文件">
+                </div>
+                <div class="form-group">
+                    <button type="button" onclick="App.upload()" class="btn btn-default btn-danger form-control" style="background-color: rgb(255,238,147);color: rgb(76, 180, 231)">上传</button>
+                </div>
+                <br></br>
+                <span><label for="search_target" id="search_target">查询歌曲信息</label></span>
+                <select  name="请选择查询方式"  id="choose_select">
+                    <option value="0">请选择查询方式</option>
+                    <option value="1">按歌名查询</option>
+                    <option value="2">按歌手名查询</option>
+                    <option value="3">按索引查询</option>
+                    <option value="4">同时按歌名和歌手名查找</option>
+                </select>
+                <div class="form-group">
+                    <input type="text" id="search" class="form-control" placeholder="请输入每种方式对应的信息，选择4的请按,分开输入两个数据">
+                </div>
+                <button type="button" onclick="App.search_song()" class="btn btn-default btn-danger form-control" style="float: left;;width: 45%;background-color: rgb(255,238,147);color: rgb(76, 180, 231)">查询歌曲信息</button>
+                <button type="button" onclick="App.close()" class="btn btn-default btn-danger form-control" style="float: right;;width: 45%;background-color: rgb(255,238,147);color: rgb(76, 180, 231)">关闭</button>
+                <textarea id="search_info" type="textarea" class="form-control" style="height: 500%;width: 100%;font-size: 20px;color: rgb(17, 35, 37);word-break: break-all;" placeholder="最多同时显示10首歌简略信息"></textarea>
+                <textarea id="total_price" type="textarea" class="form-control" style="float: left;height: 40px;width: 45%;font-size: 15px;color: rgb(17, 35, 37);word-break: break-all;" placeholder="所查询歌曲的总价格"></textarea>
+                <button type="button" onclick="App.buy_1()" class="btn btn-default btn-danger form-control" style="float: right;;width: 45%;background-color: rgb(255,238,147);color: rgb(76, 180, 231)">一键购买</button>
+                <br></br>
+                <br></br>
+                <span><label for="purchase_target" id="purchase_target">购买歌曲</label></span>
+                <div class="form-group"  style="width: 100%; height: 100%; float: left;">
+                    <div class="form-group">
+                        <input type="text" id="purchase" class="form-control" placeholder="请输入要购买歌曲的编号,若输入多个请按逗号隔开，结束无需任何符号">
+                    </div>
+                    <div class="form-group">
+                        <button type="button" onclick="App.buy_2()" class="btn btn-default btn-danger form-control" style="background-color: rgb(255,238,147);color: rgb(76, 180, 231)">购买</button>
+                    </div>
+                </div>
+                <br></br>
+                <span><label for="search_target" id="have_bought_target">查询已购买歌曲</label></span>
+                <div class="form-group">
+                    <button type="button" onclick="App.search_bought()" class="btn btn-default btn-danger form-control" style="float: right;height: 200%;width: 45%;font-size: 15px;word-break: break-all;background-color: rgb(255,238,147);color: rgb(76, 180, 231) ">查询</button>
+                </div>
+                <textarea id="search_target_info" type="textarea" class="form-control" style="height: 500%;width: 100%;font-size: 20px;color: rgb(17, 35, 37);word-break: break-all;" ></textarea>
+                <br></br>
+                <span><label for="search_target" id="trade_times_target">查询歌曲被购买次数</label></span>
+                <div class="form-group">
+                    <input type="text" id="trade_times" class="form-control" style="float: left;height: 200%;width: 45%;font-size: 15px;color: rgb(17, 35, 37);word-break: break-all; " placeholder="请输入歌曲编号">
+                    <button type="button" onclick="App.get_times()" class="btn btn-default btn-danger form-control" style="float: right;height: 200%;width: 45%;font-size: 15px;word-break: break-all;background-color: rgb(255,238,147);color: rgb(76, 180, 231) ">查询</button>
+                </div>
+                <textarea id="trade_times_info" type="textarea" class="form-control" style="height: 500%;width: 100%;font-size: 20px;color: rgb(17, 35, 37);word-break: break-all;" ></textarea>
+                <br></br>
+                <span><label for="search_target" id="money_of_target">查询歌手已获益金额</label></span>
+                <div class="form-group">
+                    <input type="text" id="singer_name" class="form-control" style="float: left;height: 200%;width: 45%;font-size: 15px;color: rgb(17, 35, 37);word-break: break-all; " placeholder="请输入歌手名字">
+                    <button type="button" onclick="App.get_benefit()" class="btn btn-default btn-danger form-control" style="float: right;height: 200%;width: 45%;font-size: 15px;word-break: break-all; background-color: rgb(255,238,147);color: rgb(76, 180, 231)">查询</button>
+                </div>
+                <textarea id="money_info" type="textarea" class="form-control" style="height: 500%;width: 100%;font-size: 20px;color: rgb(17, 35, 37);word-break: break-all;" ></textarea>
+                <br></br>
+                <span><label for="search_target" id="trade_index_target">查询交易信息</label></span>
+                <div class="form-group">
+                    <input type="text" id="trade_index" class="form-control" style="float: left;height: 200%;width: 45%;font-size: 15px;color: rgb(17, 35, 37);word-break: break-all; " placeholder="请输入交易编号">
+                    <button type="button" onclick="App.get_trade()" class="btn btn-default btn-danger form-control" style="float: right;height: 200%;width: 45%;font-size: 15px;word-break: break-all; background-color: rgb(255,238,147);color: rgb(76, 180, 231)">查询交易记录</button>
+                </div>
+                <textarea id="trade_target" type="textarea" class="form-control" style="height: 500%;width: 100%;font-size: 20px;color: rgb(17, 35, 37);word-break: break-all;" ></textarea>
+            </div>
+
+            <div style="float: right; width: 45%;">
+                <div><label for="search_target" >显示修改记录总条数</label></div>
+                <textarea id="modify_index" type="textarea" class="form-control" style="float: left;height: 40px;width: 45%;font-size: 15px;color: rgb(17, 35, 37);word-break: break-all;"></textarea>
+                <button type="button" onclick="App.get_modify_length()" class="btn btn-default btn-danger form-control" style="float: right;width: 45%;color: #337ab7; background-color: rgb(255,238,147)">显示修改记录总条数</button>
+                <br></br>
+                <br></br>
+                <!-- <button type="button" onclick="App.upload2()" class="btn btn-default btn-danger form-control">计算</button> -->
+                <span><label for="search_target" >查询修改记录</label></span>
+                <div class="form-group">
+                    <input type="text" id="modify_info" class="form-control" style="float: left;height: 200%;width: 45%;font-size: 15px;color: rgb(17, 35, 37);word-break: break-all; " placeholder="请输入修改记录编号">
+                    <button type="button" onclick="App.search_modify()" class="btn btn-default btn-danger form-control" style="float: right;height: 200%;width: 45%;font-size: 15px;color: #337ab7;word-break: break-all; background-color: rgb(255,238,147)">查询修改记录</button>
+                </div>
+                <textarea id="modify_target" type="textarea" class="form-control" style="height: 500%;width: 100%;font-size: 20px;color: rgb(17, 35, 37);word-break: break-all;" ></textarea>
+                <br></br>
+                <div><label for="search_target" id="delete_index_target">停止售卖歌曲（仅限管理员）</label></div>
+                <div class="form-group">
+                    <input type="text" id="delete_index" class="form-control" style="float: left;height: 200%;width: 45%;font-size: 15px;color: rgb(17, 35, 37);word-break: break-all; " placeholder="请输入要删除的歌曲编号">
+                    <button type="button" onclick="App.delete_song()" class="btn btn-default btn-danger form-control" style="float: right;height: 200%;width: 45%;font-size: 15px;color: #337ab7;word-break: break-all; background-color: rgb(255,238,147) ">删除歌曲信息（仅限管理员）</button>
+                </div>
+                <br></br>
+                <span><label for="upload_target" id="new_modify_target">修改信息（仅限管理员或者上传者本人）</label></span>
+                <div class="form-group">
+                    <input type="text" id="new_index" class="form-control" placeholder="请输入歌曲编号">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="new_song_name" class="form-control" placeholder="请输入歌曲名字">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="new_singer" class="form-control" placeholder="请输入演唱者名字">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="new_copyright" class="form-control" placeholder="请输入版权号">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="new_duration" class="form-control" placeholder="请输入歌曲时长，单位是秒">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="new_receiver" class="form-control" placeholder="请输入收款人账户地址">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="new_again_receiver" class="form-control" placeholder="请再次输入收款人账户地址">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="new_song_price" class="form-control" placeholder="请输入歌曲价格，0为免费">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="new_times" class="form-control" placeholder="请输入歌曲已经购买次数">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="new_song_address" class="form-control" placeholder="请输入歌曲地址">
+                </div>
+                <div class="form-group">
+                    <label>点击上传歌曲歌词文本文件</label>
+                    <input type="file" id="new_lyric" class="form-control" placeholder="请上传歌词文本" onchange="read_txt(this)">
+                </div>
+                <div class="form-group">
+                    <label>点击上传歌曲音频文件</label>
+                    <input type="file" id="new_vocal" class="form-control" placeholder="请上传歌曲音频文件">
+                </div>
+                <div class="form-group">
+                    <button type="button" onclick="App.modify_song()" class="btn btn-default btn-danger form-control" style="color: #337ab7; background-color: rgb(255,238,147)">修改（仅限管理员）</button>
+                </div>
+                <br></br>
+                <span><label for="search_target" id="detail_info_target">显示具体歌曲信息（仅限管理员和已购买歌曲者）</label></span>
+                <div class="form-group">
+                    <input type="text" id="detail_info" class="form-control" style="float: left;height: 200%;width: 45%;font-size: 15px;color: rgb(17, 35, 37);word-break: break-all; " placeholder="请输入歌曲编号">
+                    <button type="button" onclick="App.search_detail()" class="btn btn-default btn-danger form-control" style="float: right;height: 200%;width: 45%;font-size: 15px;color: #337ab7;word-break: break-all; background-color: rgb(255,238,147)">查询（仅限管理员和已购买歌曲者）</button>
+                </div>
+                <textarea id="song_target" type="textarea" class="form-control" style="height: 800%;width: 100%;font-size: 20px;color: rgb(17, 35, 37);word-break: break-all;" placeholder="歌曲详细信息"></textarea>
+                <textarea id="lyric_target" type="textarea" class="form-control" style="height: 800%;width: 100%;font-size: 20px;color: rgb(17, 35, 37);word-break: break-all;" placeholder="歌词信息" ></textarea>                
+                <audio id="audio_id" controls autoplay loop></audio>
+                <button type="button" onclick="App.close_detail()" class="btn btn-default btn-danger form-control" style="float: right;;width: 45%;background-color: rgb(255,238,147);color: rgb(76, 180, 231)">关闭</button>
+                <button type="button" onclick="App.bf()" class="btn btn-default btn-danger form-control" style="color: #337ab7; background-color: rgb(255,238,147)">播放音乐（仅限管理员和已购买歌曲者）</button>
+                <br></br>
+                <button type="button" onclick="App.getInfo()" class="btn btn-default btn-danger form-control" style="float: left;;width: 45%;background-color: rgb(255,238,147);color: rgb(76, 180, 231)">查询区块信息</button>
+                <button type="button" onclick="App.closeInfo()" class="btn btn-default btn-danger form-control" style="float: right;;width: 45%;background-color: rgb(255,238,147);color: rgb(76, 180, 231)">关闭</button>
+                <textarea id="account" type="textarea" class="form-control" style="height: 500%;width: 100%;font-size: 20px;color: rgb(17, 35, 37);word-break: break-all;" ></textarea>
+            </div>
+
+        </div>
+    </div>
+    <div id="foot">
+        <div id="footer_text1" style=" left:10px;top:800px">
+
+            <p>山西大学&nbsp;版权所有&nbsp;2022</p>
+        </div>
+        <div id="footer_text2" style=" right:10px;top:800px">
+            <p>Version&nbsp;1.0&nbsp;&nbsp;</p>
+        </div>
+    </div>
+</div>
+<script>
+function read_txt(input){
+    if(window.FileReader){
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload=function (){
+            document.getElementById("lyric_target").value=this.result;
+        }
+        reader.readAsText(file);
+    }
+}
+</script>
+<script type="text/javascript" src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+<script>
+    (function(window) {
+
+        //取得浏览器环境的baidu命名空间，非浏览器环境符合commonjs规范exports出去
+        //修正在nodejs环境下，采用baidu.template变量名
+        var baidu = typeof module === 'undefined' ? (window.baidu = window.baidu || {}) : module.exports;
+
+        //模板函数（放置于baidu.template命名空间下）
+        baidu.template = function(str, data) {
+
+            //检查是否有该id的元素存在，如果有元素则获取元素的innerHTML/value，否则认为字符串为模板
+            var fn = (function() {
+
+                //判断如果没有document，则为非浏览器环境
+                if (!window.document) {
+                    return bt._compile(str);
+                };
+
+                //HTML5规定ID可以由任何不包含空格字符的字符串组成
+                var element = document.getElementById(str);
+                if (element) {
+
+                    //取到对应id的dom，缓存其编译后的HTML模板函数
+                    if (bt.cache[str]) {
+                        return bt.cache[str];
+                    };
+
+                    //textarea或input则取value，其它情况取innerHTML
+                    var html = /^(textarea|input)$/i.test(element.nodeName) ? element.value : element.innerHTML;
+                    return bt._compile(html);
+
+                } else {
+
+                    //是模板字符串，则生成一个函数
+                    //如果直接传入字符串作为模板，则可能变化过多，因此不考虑缓存
+                    return bt._compile(str);
+                };
+
+            })();
+
+            //有数据则返回HTML字符串，没有数据则返回函数 支持data={}的情况
+            var result = bt._isObject(data) ? fn(data) : fn;
+            fn = null;
+
+            return result;
+        };
+
+        //取得命名空间 baidu.template
+        var bt = baidu.template;
+
+        //标记当前版本
+        bt.versions = bt.versions || [];
+        bt.versions.push('1.0.6');
+
+        //缓存  将对应id模板生成的函数缓存下来。
+        bt.cache = {};
+
+        //自定义分隔符，可以含有正则中的字符，可以是HTML注释开头 <! !>
+        bt.LEFT_DELIMITER = bt.LEFT_DELIMITER || '<%';
+        bt.RIGHT_DELIMITER = bt.RIGHT_DELIMITER || '%>';
+
+        //自定义默认是否转义，默认为默认自动转义
+        bt.ESCAPE = true;
+
+        //HTML转义
+        bt._encodeHTML = function(source) {
+            return String(source)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\\/g, '&#92;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        };
+
+        //转义影响正则的字符
+        bt._encodeReg = function(source) {
+            return String(source).replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1');
+        };
+
+        //转义UI UI变量使用在HTML页面标签onclick等事件函数参数中
+        bt._encodeEventHTML = function(source) {
+            return String(source)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;')
+                .replace(/\\\\/g, '\\')
+                .replace(/\\\//g, '\/')
+                .replace(/\\n/g, '\n')
+                .replace(/\\r/g, '\r');
+        };
+
+        //将字符串拼接生成函数，即编译过程(compile)
+        bt._compile = function(str) {
+            var funBody = "var _template_fun_array=[];\nvar fn=(function(__data__){\nvar _template_varName='';\nfor(name in __data__){\n_template_varName+=('var '+name+'=__data__[\"'+name+'\"];');\n};\neval(_template_varName);\n_template_fun_array.push('" + bt._analysisStr(str) + "');\n_template_varName=null;\n})(_template_object);\nfn = null;\nreturn _template_fun_array.join('');\n";
+            return new Function("_template_object", funBody);
+        };
+
+        //判断是否是Object类型
+        bt._isObject = function(source) {
+            return 'function' === typeof source || !!(source && 'object' === typeof source);
+        };
+
+        //解析模板字符串
+        bt._analysisStr = function(str) {
+
+            //取得分隔符
+            var _left_ = bt.LEFT_DELIMITER;
+            var _right_ = bt.RIGHT_DELIMITER;
+
+            //对分隔符进行转义，支持正则中的元字符，可以是HTML注释 <!  !>
+            var _left = bt._encodeReg(_left_);
+            var _right = bt._encodeReg(_right_);
+
+            str = String(str)
+
+                //去掉分隔符中js注释
+                .replace(new RegExp("(" + _left + "[^" + _right + "]*)//.*\n", "g"), "$1")
+
+                //去掉注释内容  <%* 这里可以任意的注释 *%>
+                //默认支持HTML注释，将HTML注释匹配掉的原因是用户有可能用 <! !>来做分割符
+                .replace(new RegExp("<!--.*?-->", "g"), "")
+                .replace(new RegExp(_left + "\\*.*?\\*" + _right, "g"), "")
+
+                //把所有换行去掉  \r回车符 \t制表符 \n换行符
+                .replace(new RegExp("[\\r\\t\\n]", "g"), "")
+
+                //用来处理非分隔符内部的内容中含有 斜杠 \ 单引号 ‘ ，处理办法为HTML转义
+                .replace(new RegExp(_left + "(?:(?!" + _right + ")[\\s\\S])*" + _right + "|((?:(?!" + _left + ")[\\s\\S])+)", "g"), function(item, $1) {
+                    var str = '';
+                    if ($1) {
+
+                        //将 斜杠 单引 HTML转义
+                        str = $1.replace(/\\/g, "&#92;").replace(/'/g, '&#39;');
+                        while (/<[^<]*?&#39;[^<]*?>/g.test(str)) {
+
+                            //将标签内的单引号转义为\r  结合最后一步，替换为\'
+                            str = str.replace(/(<[^<]*?)&#39;([^<]*?>)/g, '$1\r$2')
+                        };
+                    } else {
+                        str = item;
+                    }
+                    return str;
+                });
+
+
+            str = str
+                //定义变量，如果没有分号，需要容错  <%var val='test'%>
+                .replace(new RegExp("(" + _left + "[\\s]*?var[\\s]*?.*?[\\s]*?[^;])[\\s]*?" + _right, "g"), "$1;" + _right_)
+
+                //对变量后面的分号做容错(包括转义模式 如<%:h=value%>)  <%=value;%> 排除掉函数的情况 <%fun1();%> 排除定义变量情况  <%var val='test';%>
+                .replace(new RegExp("(" + _left + ":?[hvu]?[\\s]*?=[\\s]*?[^;|" + _right + "]*?);[\\s]*?" + _right, "g"), "$1" + _right_)
+
+                //按照 <% 分割为一个个数组，再用 \t 和在一起，相当于将 <% 替换为 \t
+                //将模板按照<%分为一段一段的，再在每段的结尾加入 \t,即用 \t 将每个模板片段前面分隔开
+                .split(_left_).join("\t");
+
+            //支持用户配置默认是否自动转义
+            if (bt.ESCAPE) {
+                str = str
+
+                    //找到 \t=任意一个字符%> 替换为 ‘，任意字符,'
+                    //即替换简单变量  \t=data%> 替换为 ',data,'
+                    //默认HTML转义  也支持HTML转义写法<%:h=value%>
+                    .replace(new RegExp("\\t=(.*?)" + _right, "g"), "',typeof($1) === 'undefined'?'':baidu.template._encodeHTML($1),'");
+            } else {
+                str = str
+
+                    //默认不转义HTML转义
+                    .replace(new RegExp("\\t=(.*?)" + _right, "g"), "',typeof($1) === 'undefined'?'':$1,'");
+            };
+
+            str = str
+
+                //支持HTML转义写法<%:h=value%>
+                .replace(new RegExp("\\t:h=(.*?)" + _right, "g"), "',typeof($1) === 'undefined'?'':baidu.template._encodeHTML($1),'")
+
+                //支持不转义写法 <%:=value%>和<%-value%>
+                .replace(new RegExp("\\t(?::=|-)(.*?)" + _right, "g"), "',typeof($1)==='undefined'?'':$1,'")
+
+                //支持url转义 <%:u=value%>
+                .replace(new RegExp("\\t:u=(.*?)" + _right, "g"), "',typeof($1)==='undefined'?'':encodeURIComponent($1),'")
+
+                //支持UI 变量使用在HTML页面标签onclick等事件函数参数中  <%:v=value%>
+                .replace(new RegExp("\\t:v=(.*?)" + _right, "g"), "',typeof($1)==='undefined'?'':baidu.template._encodeEventHTML($1),'")
+
+                //将字符串按照 \t 分成为数组，在用'); 将其合并，即替换掉结尾的 \t 为 ');
+                //在if，for等语句前面加上 '); ，形成 ');if  ');for  的形式
+                .split("\t").join("');")
+
+                //将 %> 替换为_template_fun_array.push('
+                //即去掉结尾符，生成函数中的push方法
+                //如：if(list.length=5){%><h2>',list[4],'</h2>');}
+                //会被替换为 if(list.length=5){_template_fun_array.push('<h2>',list[4],'</h2>');}
+                .split(_right_).join("_template_fun_array.push('")
+
+                //将 \r 替换为 \
+                .split("\r").join("\\'");
+
+            return str;
+        };
+
+    })(window);
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+#codeTextarea {
+    width: 500px;
+    height: 310px;
+}
+
+.textAreaWithLines {
+    font-family: courier;
+    border: 1px solid #ddd;
+}
+
+.textAreaWithLines textarea,
+.textAreaWithLines div {
+    border: 0px;
+    line-height: 120%;
+    font-size: 12px;
+}
+
+.lineObj {
+    color: #666;
+}

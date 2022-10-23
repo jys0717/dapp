@@ -1,0 +1,57 @@
+@charset "utf-8";
+
+#stuName {
+    width: 150px;
+    height: 17px;
+    position: relative;
+    left: 545px;
+    top: 60px;
+}
+
+#stuId {
+    width: 150px;
+    height: 17px;
+    position: relative;
+    left: 545px;
+    top: 60px;
+}
+
+#submitInfo {
+    position: relative;
+    left: 550px;
+    top: 60px;
+}
+
+#totalStudents {
+    width: 150px;
+    height: 17px;
+    position: relative;
+    left: 545px;
+    top: 60px;
+}
+
+#electionStudents {
+    width: 150px;
+    height: 17px;
+    position: relative;
+    left: 545px;
+    top: 60px;
+}
+
+#startelection {
+    position: relative;
+    left: 675px;
+    top: 65px;
+}
+
+#getcount {
+    position: relative;
+    left: 550px;
+    top: 60px;
+}
+
+#status {
+    position: relative;
+    left: 480px;
+    top: 95px;
+}
